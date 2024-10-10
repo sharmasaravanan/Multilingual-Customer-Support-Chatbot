@@ -2,8 +2,6 @@
 
 A Flask-based customer support chatbot with real-time multilingual translation capabilities using the M2M100 model.
 
-![Chatbot Demo](https://via.placeholder.com/600x400.png?text=Chatbot+Demo)
-
 ## Features
 
 - Real-time chat interface
