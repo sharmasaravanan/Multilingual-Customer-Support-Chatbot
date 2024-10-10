@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multilingual Customer Support</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+        .chat-container {
+            width: 400px;
+            height: 600px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            text-align: center;
+        }
+        .chat-header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+        .language-selector {
+            padding: 10px;
+            background-color: #f8f9fa;
+        }
+        .language-selector select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: #e3f2fd;
+            margin-left: auto;
+        }
+        .bot-message {
+            background-color: #f5f5f5;
+        }
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .chat-input form {
+            display: flex;
+        }
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .chat-input button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .chat-input button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Customer Support</h1>
+        </div>
+        <div class="language-selector">
+            <select id="language">
+                <option value="English">English</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+                <option value="Italian">Italian</option>
+                <option value="Chinese">Chinese</option>
+                <option value="Japanese">Japanese</option>
+                <option value="Korean">Korean</option>
+                <option value="Russian">Russian</option>
+                <option value="Arabic">Arabic</option>
+            </select>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <!-- Messages will be added here dynamically -->
+        </div>
+        <div class="chat-input">
+            <form id="chat-form">
+                <input type="text" id="user-input" placeholder="Type your message..." required>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            function addMessage(message, isUser) {
+                const messageDiv = $('<div>').addClass('message').addClass(isUser ? 'user-message' : 'bot-message').text(message);
+                $('#chat-messages').append(messageDiv);
+                $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
+            }
+
+            $('#chat-form').on('submit', function(e) {
+                e.preventDefault();
+                const userInput = $('#user-input').val();
+                const selectedLanguage = $('#language').val();
+
+                if (userInput.trim() === '') return;
+
+                addMessage(userInput, true);
+                $('#user-input').val('');
+
+                $.ajax({
+                    url: '/chat',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        message: userInput,
+                        language: selectedLanguage
+                    }),
+                    success: function(response) {
+                        addMessage(response.response, false);
+                    },
+                    error: function() {
+                        addMessage("Sorry, there was an error processing your request.", false);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
